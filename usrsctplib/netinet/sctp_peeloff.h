@@ -43,28 +43,28 @@ __FBSDID("$FreeBSD: head/sys/netinet/sctp_peeloff.h 309607 2016-12-06 10:21:25Z 
 /* socket option peeloff */
 struct sctp_peeloff_opt {
 #if !defined(__Windows__)
-	int s;
+    int s;
 #else
-	HANDLE s;
+    HANDLE s;
 #endif
-	sctp_assoc_t assoc_id;
+    sctp_assoc_t assoc_id;
 #if !defined(__Windows__)
-	int new_sd;
+    int new_sd;
 #else
-	HANDLE new_sd;
+    HANDLE new_sd;
 #endif
 };
 #endif /* HAVE_SCTP_PEELOFF_SOCKOPT */
 #if defined(_KERNEL)
-int sctp_can_peel_off(struct socket *, sctp_assoc_t);
-int sctp_do_peeloff(struct socket *, struct socket *, sctp_assoc_t);
+int sctp_can_peel_off(struct socket*, sctp_assoc_t);
+int sctp_do_peeloff(struct socket*, struct socket*, sctp_assoc_t);
 #if defined(HAVE_SCTP_PEELOFF_SOCKOPT)
-struct socket *sctp_get_peeloff(struct socket *, sctp_assoc_t, int *);
-int sctp_peeloff_option(struct proc *p, struct sctp_peeloff_opt *peeloff);
+struct socket* sctp_get_peeloff(struct socket*, sctp_assoc_t, int*);
+int sctp_peeloff_option(struct proc* p, struct sctp_peeloff_opt* peeloff);
 #endif /* HAVE_SCTP_PEELOFF_SOCKOPT */
 #endif /* _KERNEL */
 #if defined(__Userspace__)
-int sctp_can_peel_off(struct socket *, sctp_assoc_t);
-int sctp_do_peeloff(struct socket *, struct socket *, sctp_assoc_t);
+int sctp_can_peel_off(struct socket*, sctp_assoc_t);
+int sctp_do_peeloff(struct socket*, struct socket*, sctp_assoc_t);
 #endif /* __Userspace__ */
 #endif /* _NETINET_SCTP_PEELOFF_H_ */

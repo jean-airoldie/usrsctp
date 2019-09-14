@@ -31,7 +31,7 @@
 /* __Userspace__ */
 
 #include <stdlib.h>
-#if !defined (__Userspace_os_Windows)
+#if !defined(__Userspace_os_Windows)
 #include <stdint.h>
 #include <netinet/sctp_os_userspace.h>
 #endif
@@ -39,7 +39,7 @@
 #include <sys/types.h>
 /* #include <sys/param.h> defines MIN */
 #if !defined(MIN)
-#define MIN(arg1,arg2) ((arg1) < (arg2) ? (arg1) : (arg2))
+#define MIN(arg1, arg2) ((arg1) < (arg2) ? (arg1) : (arg2))
 #endif
 #include <string.h>
 
@@ -66,48 +66,46 @@ userland_mutex_t atomic_mtx;
  */
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
 static int
-read_random_phony(void *buf, int count)
+read_random_phony(void* buf, int count)
 {
-	memset(buf, 'A', count);
-	return (count);
+    memset(buf, 'A', count);
+    return (count);
 }
 #else
 #if defined(__Userspace_os_FreeBSD) || defined(__Userspace_os_Darwin)
 static int
-read_random_phony(void *buf, int count)
+read_random_phony(void* buf, int count)
 {
-	if (count >= 0) {
-		arc4random_buf(buf, count);
-	}
-	return (count);
+    if (count >= 0) {
+        arc4random_buf(buf, count);
+    }
+    return (count);
 }
 #else
 static int
-read_random_phony(void *buf, int count)
+read_random_phony(void* buf, int count)
 {
-	uint32_t randval;
-	int size, i;
+    uint32_t randval;
+    int size, i;
 
-	/* srandom() is called in kern/init_main.c:proc0_post() */
+    /* srandom() is called in kern/init_main.c:proc0_post() */
 
-	/* Fill buf[] with random(9) output */
-	for (i = 0; i < count; i+= (int)sizeof(uint32_t)) {
-		randval = random();
-		size = MIN(count - i, (int)sizeof(uint32_t));
-		memcpy(&((char *)buf)[i], &randval, (size_t)size);
-	}
+    /* Fill buf[] with random(9) output */
+    for (i = 0; i < count; i += (int)sizeof(uint32_t)) {
+        randval = random();
+        size = MIN(count - i, (int)sizeof(uint32_t));
+        memcpy(&((char*)buf)[i], &randval, (size_t)size);
+    }
 
-	return (count);
+    return (count);
 }
 #endif
 #endif
 
-static int (*read_func)(void *, int) = read_random_phony;
+static int (*read_func)(void*, int) = read_random_phony;
 
 /* Userland-visible version of read_random */
-int
-read_random(void *buf, int count)
+int read_random(void* buf, int count)
 {
-	return ((*read_func)(buf, count));
+    return ((*read_func)(buf, count));
 }
-

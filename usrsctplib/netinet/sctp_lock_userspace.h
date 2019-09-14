@@ -69,7 +69,6 @@ __FBSDID("$FreeBSD$");
 #define SCTP_WQ_ADDR_LOCK()
 #define SCTP_WQ_ADDR_UNLOCK()
 
-
 #define SCTP_IPI_ADDR_INIT()
 #define SCTP_IPI_ADDR_DESTROY()
 #define SCTP_IPI_ADDR_RLOCK()
@@ -82,13 +81,10 @@ __FBSDID("$FreeBSD$");
 #define SCTP_IPI_ITERATOR_WQ_LOCK()
 #define SCTP_IPI_ITERATOR_WQ_UNLOCK()
 
-
 #define SCTP_IP_PKTLOG_INIT()
 #define SCTP_IP_PKTLOG_LOCK()
 #define SCTP_IP_PKTLOG_UNLOCK()
 #define SCTP_IP_PKTLOG_DESTROY()
-
-
 
 #define SCTP_INP_READ_INIT(_inp)
 #define SCTP_INP_READ_DESTROY(_inp)
@@ -100,7 +96,6 @@ __FBSDID("$FreeBSD$");
 #define SCTP_INP_LOCK_DESTROY(_inp)
 #define SCTP_ASOC_CREATE_LOCK_DESTROY(_inp)
 
-
 #define SCTP_INP_RLOCK(_inp)
 #define SCTP_INP_WLOCK(_inp)
 
@@ -109,7 +104,6 @@ __FBSDID("$FreeBSD$");
 #define SCTP_INP_READ_CONTENDED(_inp) (0) /* Don't know if this is possible */
 
 #define SCTP_ASOC_CREATE_LOCK_CONTENDED(_inp) (0) /* Don't know if this is possible */
-
 
 #define SCTP_TCB_SEND_LOCK_INIT(_tcb)
 #define SCTP_TCB_SEND_LOCK_DESTROY(_tcb)
@@ -125,7 +119,6 @@ __FBSDID("$FreeBSD$");
 #define SCTP_INP_WUNLOCK(_inp)
 #define SCTP_ASOC_CREATE_UNLOCK(_inp)
 
-
 #define SCTP_TCB_LOCK_INIT(_tcb)
 #define SCTP_TCB_LOCK_DESTROY(_tcb)
 #define SCTP_TCB_LOCK(_tcb)
@@ -134,100 +127,93 @@ __FBSDID("$FreeBSD$");
 #define SCTP_TCB_UNLOCK_IFOWNED(_tcb)
 #define SCTP_TCB_LOCK_ASSERT(_tcb)
 
-
-
 #define SCTP_ITERATOR_LOCK_INIT()
 #define SCTP_ITERATOR_LOCK()
 #define SCTP_ITERATOR_UNLOCK()
 #define SCTP_ITERATOR_LOCK_DESTROY()
 
+#define SCTP_INCR_EP_COUNT()        \
+    do {                            \
+        sctppcbinfo.ipi_count_ep++; \
+    } while (0)
 
+#define SCTP_DECR_EP_COUNT()        \
+    do {                            \
+        sctppcbinfo.ipi_count_ep--; \
+    } while (0)
 
-#define SCTP_INCR_EP_COUNT() \
-                do { \
-		       sctppcbinfo.ipi_count_ep++; \
-	        } while (0)
+#define SCTP_INCR_ASOC_COUNT()        \
+    do {                              \
+        sctppcbinfo.ipi_count_asoc++; \
+    } while (0)
 
-#define SCTP_DECR_EP_COUNT() \
-                do { \
-		       sctppcbinfo.ipi_count_ep--; \
-	        } while (0)
+#define SCTP_DECR_ASOC_COUNT()        \
+    do {                              \
+        sctppcbinfo.ipi_count_asoc--; \
+    } while (0)
 
-#define SCTP_INCR_ASOC_COUNT() \
-                do { \
-	               sctppcbinfo.ipi_count_asoc++; \
-	        } while (0)
+#define SCTP_INCR_LADDR_COUNT()        \
+    do {                               \
+        sctppcbinfo.ipi_count_laddr++; \
+    } while (0)
 
-#define SCTP_DECR_ASOC_COUNT() \
-                do { \
-	               sctppcbinfo.ipi_count_asoc--; \
-	        } while (0)
+#define SCTP_DECR_LADDR_COUNT()        \
+    do {                               \
+        sctppcbinfo.ipi_count_laddr--; \
+    } while (0)
 
-#define SCTP_INCR_LADDR_COUNT() \
-                do { \
-	               sctppcbinfo.ipi_count_laddr++; \
-	        } while (0)
+#define SCTP_INCR_RADDR_COUNT()        \
+    do {                               \
+        sctppcbinfo.ipi_count_raddr++; \
+    } while (0)
 
-#define SCTP_DECR_LADDR_COUNT() \
-                do { \
-	               sctppcbinfo.ipi_count_laddr--; \
-	        } while (0)
+#define SCTP_DECR_RADDR_COUNT()        \
+    do {                               \
+        sctppcbinfo.ipi_count_raddr--; \
+    } while (0)
 
-#define SCTP_INCR_RADDR_COUNT() \
-                do { \
- 	               sctppcbinfo.ipi_count_raddr++; \
-	        } while (0)
+#define SCTP_INCR_CHK_COUNT()          \
+    do {                               \
+        sctppcbinfo.ipi_count_chunk++; \
+    } while (0)
 
-#define SCTP_DECR_RADDR_COUNT() \
-                do { \
- 	               sctppcbinfo.ipi_count_raddr--; \
-	        } while (0)
+#define SCTP_DECR_CHK_COUNT()          \
+    do {                               \
+        sctppcbinfo.ipi_count_chunk--; \
+    } while (0)
 
-#define SCTP_INCR_CHK_COUNT() \
-                do { \
-  	               sctppcbinfo.ipi_count_chunk++; \
-	        } while (0)
+#define SCTP_INCR_READQ_COUNT()        \
+    do {                               \
+        sctppcbinfo.ipi_count_readq++; \
+    } while (0)
 
-#define SCTP_DECR_CHK_COUNT() \
-                do { \
-  	               sctppcbinfo.ipi_count_chunk--; \
-	        } while (0)
+#define SCTP_DECR_READQ_COUNT()        \
+    do {                               \
+        sctppcbinfo.ipi_count_readq--; \
+    } while (0)
 
-#define SCTP_INCR_READQ_COUNT() \
-                do { \
-		       sctppcbinfo.ipi_count_readq++; \
-	        } while (0)
+#define SCTP_INCR_STRMOQ_COUNT()        \
+    do {                                \
+        sctppcbinfo.ipi_count_strmoq++; \
+    } while (0)
 
-#define SCTP_DECR_READQ_COUNT() \
-                do { \
-		       sctppcbinfo.ipi_count_readq--; \
-	        } while (0)
-
-#define SCTP_INCR_STRMOQ_COUNT() \
-                do { \
-		       sctppcbinfo.ipi_count_strmoq++; \
-	        } while (0)
-
-#define SCTP_DECR_STRMOQ_COUNT() \
-                do { \
-		       sctppcbinfo.ipi_count_strmoq--; \
-	        } while (0)
-
+#define SCTP_DECR_STRMOQ_COUNT()        \
+    do {                                \
+        sctppcbinfo.ipi_count_strmoq--; \
+    } while (0)
 
 /* not sure if __Userspace__ needs these (but copied nonetheless...) */
 #if defined(SCTP_SO_LOCK_TESTING)
-#define SCTP_INP_SO(sctpinp)	(sctpinp)->ip_inp.inp.inp_socket
+#define SCTP_INP_SO(sctpinp) (sctpinp)->ip_inp.inp.inp_socket
 #define SCTP_SOCKET_LOCK(so, refcnt)
 #define SCTP_SOCKET_UNLOCK(so, refcnt)
 #endif
-
 
 /* these were in sctp_lock_empty.h but aren't in sctp_lock_bsd.h ... */
 #if 0
 #define SCTP_IPI_ADDR_LOCK()
 #define SCTP_IPI_ADDR_UNLOCK()
 #endif
-
 
 /* These were in sctp_lock_empty.h because they were commented out within
  *  within user_include/user_socketvar.h .  If they are NOT commented out

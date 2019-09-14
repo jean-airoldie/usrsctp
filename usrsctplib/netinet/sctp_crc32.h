@@ -41,16 +41,16 @@ __FBSDID("$FreeBSD: head/sys/netinet/sctp_crc32.h 327200 2017-12-26 12:35:02Z tu
 #define _NETINET_SCTP_CRC32_H_
 
 #if defined(_KERNEL)
-uint32_t sctp_calculate_cksum(struct mbuf *, uint32_t);
+uint32_t sctp_calculate_cksum(struct mbuf*, uint32_t);
 #if defined(__FreeBSD__)
 #ifdef SCTP
-void sctp_delayed_cksum(struct mbuf *, uint32_t offset);
+void sctp_delayed_cksum(struct mbuf*, uint32_t offset);
 #endif
 #endif
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 #if defined(__Userspace__)
-uint32_t calculate_crc32c(uint32_t, const unsigned char *, unsigned int);
+uint32_t calculate_crc32c(uint32_t, const unsigned char*, unsigned int);
 uint32_t sctp_finalize_crc32c(uint32_t);
-uint32_t sctp_calculate_cksum(struct mbuf *, uint32_t);
+uint32_t sctp_calculate_cksum(struct mbuf*, uint32_t);
 #endif
-#endif				/* __crc32c_h__ */
+#endif /* __crc32c_h__ */

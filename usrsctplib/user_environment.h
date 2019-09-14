@@ -38,7 +38,7 @@
 #include <sys/mutex.h>
 #endif
 #endif
-#if defined (__Userspace_os_Windows)
+#if defined(__Userspace_os_Windows)
 #include "netinet/sctp_os_userspace.h"
 #endif
 
@@ -53,7 +53,6 @@ extern int maxsockets;
  */
 extern int hz;
 
-
 /* The following two ints define a range of available ephemeral ports. */
 extern int ipport_firstauto, ipport_lastauto;
 
@@ -63,51 +62,52 @@ extern int ipport_firstauto, ipport_lastauto;
 extern int nmbclusters;
 
 #if !defined(_MSC_VER) && !defined(__MINGW32__)
-#define min(a,b) ((a)>(b)?(b):(a))
-#define max(a,b) ((a)>(b)?(a):(b))
+#define min(a, b) ((a) > (b) ? (b) : (a))
+#define max(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
-extern int read_random(void *buf, int count);
+extern int read_random(void* buf, int count);
 
 /* errno's may differ per OS.  errno.h now included in sctp_os_userspace.h */
 /* Source: /usr/src/sys/sys/errno.h */
-/* #define	ENOSPC		28 */		/* No space left on device */
-/* #define	ENOBUFS		55 */		/* No buffer space available */
-/* #define	ENOMEM		12 */		/* Cannot allocate memory */
-/* #define	EACCES		13 */		/* Permission denied */
-/* #define	EFAULT		14 */		/* Bad address */
-/* #define	EHOSTDOWN	64 */		/* Host is down */
-/* #define	EHOSTUNREACH	65 */		/* No route to host */
+/* #define	ENOSPC		28 */ /* No space left on device */
+/* #define	ENOBUFS		55 */ /* No buffer space available */
+/* #define	ENOMEM		12 */ /* Cannot allocate memory */
+/* #define	EACCES		13 */ /* Permission denied */
+/* #define	EFAULT		14 */ /* Bad address */
+/* #define	EHOSTDOWN	64 */ /* Host is down */
+/* #define	EHOSTUNREACH	65 */ /* No route to host */
 
 /* Source ip_output.c. extern'd in ip_var.h */
 extern u_short ip_id;
 
 #if defined(__Userspace_os_Linux)
-#define IPV6_VERSION            0x60
+#define IPV6_VERSION 0x60
 #endif
 
 #if defined(INVARIANTS)
 #include <stdlib.h>
 
 static inline void
-terminate_non_graceful(void) {
-	abort();
+terminate_non_graceful(void)
+{
+    abort();
 }
 
-#define panic(...)                                  \
-	do {                                        \
-		SCTP_PRINTF("%s(): ", __func__);    \
-		SCTP_PRINTF(__VA_ARGS__);           \
-		SCTP_PRINTF("\n");                  \
-		terminate_non_graceful();           \
-} while (0)
+#define panic(...)                       \
+    do {                                 \
+        SCTP_PRINTF("%s(): ", __func__); \
+        SCTP_PRINTF(__VA_ARGS__);        \
+        SCTP_PRINTF("\n");               \
+        terminate_non_graceful();        \
+    } while (0)
 
-#define KASSERT(cond, args)          \
-	do {                         \
-		if (!(cond)) {       \
-			panic args ; \
-		}                    \
-	} while (0)
+#define KASSERT(cond, args) \
+    do {                    \
+        if (!(cond)) {      \
+            panic args;     \
+        }                   \
+    } while (0)
 #else
 #define KASSERT(cond, args)
 #endif

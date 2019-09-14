@@ -26,7 +26,6 @@
  *
  */
 
-
 #ifdef _WIN32
 #include <netinet/sctp_pcb.h>
 #include <sys/timeb.h>
@@ -49,36 +48,34 @@
  * routines.
  */
 #if defined(__MINGW32__)
-#pragma GCC diagnostic push 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 static DWORD WINAPI
-sctp_create_thread_adapter(void *arg) {
-	start_routine_t start_routine = (start_routine_t)arg;
-	return start_routine(NULL) == NULL;
+sctp_create_thread_adapter(void* arg)
+{
+    start_routine_t start_routine = (start_routine_t)arg;
+    return start_routine(NULL) == NULL;
 }
 
-int
-sctp_userspace_thread_create(userland_thread_t *thread, start_routine_t start_routine)
+int sctp_userspace_thread_create(userland_thread_t* thread, start_routine_t start_routine)
 {
-	*thread = CreateThread(NULL, 0, sctp_create_thread_adapter,
-			       (void *)start_routine, 0, NULL);
-	if (*thread == NULL)
-		return GetLastError();
-	return 0;
+    *thread = CreateThread(NULL, 0, sctp_create_thread_adapter,
+        (void*)start_routine, 0, NULL);
+    if (*thread == NULL)
+        return GetLastError();
+    return 0;
 }
 
-int
-sctp_userspace_thread_id(userland_thread_id_t *thread)
+int sctp_userspace_thread_id(userland_thread_id_t* thread)
 {
-	*thread = GetCurrentThreadId();
-	return 0;
+    *thread = GetCurrentThreadId();
+    return 0;
 }
 
-int
-sctp_userspace_thread_equal(userland_thread_id_t t1, userland_thread_id_t t2)
+int sctp_userspace_thread_equal(userland_thread_id_t t1, userland_thread_id_t t2)
 {
-	return (t1 == t2);
+    return (t1 == t2);
 }
 
 #if defined(__MINGW32__)
@@ -86,165 +83,155 @@ sctp_userspace_thread_equal(userland_thread_id_t t1, userland_thread_id_t t2)
 #endif
 
 #else
-int
-sctp_userspace_thread_create(userland_thread_t *thread, start_routine_t start_routine)
+int sctp_userspace_thread_create(userland_thread_t* thread, start_routine_t start_routine)
 {
-	return pthread_create(thread, NULL, start_routine, NULL);
+    return pthread_create(thread, NULL, start_routine, NULL);
 }
 
-int
-sctp_userspace_thread_id(userland_thread_id_t *thread)
+int sctp_userspace_thread_id(userland_thread_id_t* thread)
 {
-	*thread = pthread_self();
-	return 0;
+    *thread = pthread_self();
+    return 0;
 }
 
-int
-sctp_userspace_thread_equal(userland_thread_id_t t1, userland_thread_id_t t2)
+int sctp_userspace_thread_equal(userland_thread_id_t t1, userland_thread_id_t t2)
 {
-	return pthread_equal(t1, t2);
+    return pthread_equal(t1, t2);
 }
 #endif
 
-void
-sctp_userspace_set_threadname(const char *name)
+void sctp_userspace_set_threadname(const char* name)
 {
 #if defined(__Userspace_os_Darwin)
-	pthread_setname_np(name);
+    pthread_setname_np(name);
 #endif
 #if defined(__Userspace_os_Linux)
-	prctl(PR_SET_NAME, name);
+    prctl(PR_SET_NAME, name);
 #endif
 #if defined(__Userspace_os_FreeBSD)
-	pthread_set_name_np(pthread_self(), name);
+    pthread_set_name_np(pthread_self(), name);
 #endif
 }
 
 #if !defined(_WIN32) && !defined(__Userspace_os_NaCl)
-int
-sctp_userspace_get_mtu_from_ifn(uint32_t if_index, int af)
+int sctp_userspace_get_mtu_from_ifn(uint32_t if_index, int af)
 {
-	struct ifreq ifr;
-	int fd;
+    struct ifreq ifr;
+    int fd;
 
-	memset(&ifr, 0, sizeof(struct ifreq));
-	if (if_indextoname(if_index, ifr.ifr_name) != NULL) {
-		/* TODO can I use the raw socket here and not have to open a new one with each query? */
-		if ((fd = socket(af, SOCK_DGRAM, 0)) < 0)
-			return (0);
-		if (ioctl(fd, SIOCGIFMTU, &ifr) < 0) {
-			close(fd);
-			return (0);
-		}
-		close(fd);
-		return ifr.ifr_mtu;
-	} else {
-		return (0);
-	}
+    memset(&ifr, 0, sizeof(struct ifreq));
+    if (if_indextoname(if_index, ifr.ifr_name) != NULL) {
+        /* TODO can I use the raw socket here and not have to open a new one with each query? */
+        if ((fd = socket(af, SOCK_DGRAM, 0)) < 0)
+            return (0);
+        if (ioctl(fd, SIOCGIFMTU, &ifr) < 0) {
+            close(fd);
+            return (0);
+        }
+        close(fd);
+        return ifr.ifr_mtu;
+    } else {
+        return (0);
+    }
 }
 #endif
 
 #if defined(__Userspace_os_NaCl)
-int
-sctp_userspace_get_mtu_from_ifn(uint32_t if_index, int af)
+int sctp_userspace_get_mtu_from_ifn(uint32_t if_index, int af)
 {
-	return 1280;
+    return 1280;
 }
 #endif
 
 #if defined(__Userspace_os_Darwin) || defined(__Userspace_os_DragonFly) || defined(__Userspace_os_Linux) || defined(__Userspace_os_NaCl) || defined(__Userspace_os_NetBSD) || defined(__Userspace_os_Windows) || defined(__Userspace_os_Fuchsia)
-int
-timingsafe_bcmp(const void *b1, const void *b2, size_t n)
+int timingsafe_bcmp(const void* b1, const void* b2, size_t n)
 {
-	const unsigned char *p1 = b1, *p2 = b2;
-	int ret = 0;
+    const unsigned char *p1 = b1, *p2 = b2;
+    int ret = 0;
 
-	for (; n > 0; n--)
-		ret |= *p1++ ^ *p2++;
-	return (ret != 0);
+    for (; n > 0; n--)
+        ret |= *p1++ ^ *p2++;
+    return (ret != 0);
 }
 #endif
 
 #ifdef _WIN32
-int
-sctp_userspace_get_mtu_from_ifn(uint32_t if_index, int af)
+int sctp_userspace_get_mtu_from_ifn(uint32_t if_index, int af)
 {
-	PIP_ADAPTER_ADDRESSES pAdapterAddrs, pAdapt;
-	DWORD AdapterAddrsSize, Err;
-	int ret;
+    PIP_ADAPTER_ADDRESSES pAdapterAddrs, pAdapt;
+    DWORD AdapterAddrsSize, Err;
+    int ret;
 
-	ret = 0;
-	AdapterAddrsSize = 0;
-	pAdapterAddrs = NULL;
-	if ((Err = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &AdapterAddrsSize)) != 0) {
-		if ((Err != ERROR_BUFFER_OVERFLOW) && (Err != ERROR_INSUFFICIENT_BUFFER)) {
-			SCTPDBG(SCTP_DEBUG_USR, "GetAdaptersAddresses() sizing failed with error code %d, AdapterAddrsSize = %d\n", Err, AdapterAddrsSize);
-			ret = -1;
-			goto cleanup;
-		}
-	}
-	if ((pAdapterAddrs = (PIP_ADAPTER_ADDRESSES) GlobalAlloc(GPTR, AdapterAddrsSize)) == NULL) {
-		SCTPDBG(SCTP_DEBUG_USR, "Memory allocation error!\n");
-		ret = -1;
-		goto cleanup;
-	}
-	if ((Err = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, pAdapterAddrs, &AdapterAddrsSize)) != ERROR_SUCCESS) {
-		SCTPDBG(SCTP_DEBUG_USR, "GetAdaptersAddresses() failed with error code %d\n", Err);
-		ret = -1;
-		goto cleanup;
-	}
-	for (pAdapt = pAdapterAddrs; pAdapt; pAdapt = pAdapt->Next) {
-		if (pAdapt->IfIndex == if_index) {
-			ret = pAdapt->Mtu;
-			break;
-		}
-	}
+    ret = 0;
+    AdapterAddrsSize = 0;
+    pAdapterAddrs = NULL;
+    if ((Err = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &AdapterAddrsSize)) != 0) {
+        if ((Err != ERROR_BUFFER_OVERFLOW) && (Err != ERROR_INSUFFICIENT_BUFFER)) {
+            SCTPDBG(SCTP_DEBUG_USR, "GetAdaptersAddresses() sizing failed with error code %d, AdapterAddrsSize = %d\n", Err, AdapterAddrsSize);
+            ret = -1;
+            goto cleanup;
+        }
+    }
+    if ((pAdapterAddrs = (PIP_ADAPTER_ADDRESSES)GlobalAlloc(GPTR, AdapterAddrsSize)) == NULL) {
+        SCTPDBG(SCTP_DEBUG_USR, "Memory allocation error!\n");
+        ret = -1;
+        goto cleanup;
+    }
+    if ((Err = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, pAdapterAddrs, &AdapterAddrsSize)) != ERROR_SUCCESS) {
+        SCTPDBG(SCTP_DEBUG_USR, "GetAdaptersAddresses() failed with error code %d\n", Err);
+        ret = -1;
+        goto cleanup;
+    }
+    for (pAdapt = pAdapterAddrs; pAdapt; pAdapt = pAdapt->Next) {
+        if (pAdapt->IfIndex == if_index) {
+            ret = pAdapt->Mtu;
+            break;
+        }
+    }
 cleanup:
-	if (pAdapterAddrs != NULL) {
-		GlobalFree(pAdapterAddrs);
-	}
-	return (ret);
+    if (pAdapterAddrs != NULL) {
+        GlobalFree(pAdapterAddrs);
+    }
+    return (ret);
 }
 
-void
-getwintimeofday(struct timeval *tv)
+void getwintimeofday(struct timeval* tv)
 {
-	struct timeb tb;
+    struct timeb tb;
 
-	ftime(&tb);
-	tv->tv_sec = (long)tb.time;
-	tv->tv_usec = (long)(tb.millitm) * 1000L;
+    ftime(&tb);
+    tv->tv_sec = (long)tb.time;
+    tv->tv_usec = (long)(tb.millitm) * 1000L;
 }
 
-int
-win_if_nametoindex(const char *ifname)
+int win_if_nametoindex(const char* ifname)
 {
-	IP_ADAPTER_ADDRESSES *addresses, *addr;
-	ULONG status, size;
-	int index = 0;
+    IP_ADAPTER_ADDRESSES *addresses, *addr;
+    ULONG status, size;
+    int index = 0;
 
-	if (!ifname) {
-		return 0;
-	}
+    if (!ifname) {
+        return 0;
+    }
 
-	size = 0;
-	status = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &size);
-	if (status != ERROR_BUFFER_OVERFLOW) {
-		return 0;
-	}
-	addresses = malloc(size);
-	status = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, addresses, &size);
-	if (status == ERROR_SUCCESS) {
-		for (addr = addresses; addr; addr = addr->Next) {
-			if (addr->AdapterName && !strcmp(ifname, addr->AdapterName)) {
-				index = addr->IfIndex;
-				break;
-			}
-		}
-	}
+    size = 0;
+    status = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &size);
+    if (status != ERROR_BUFFER_OVERFLOW) {
+        return 0;
+    }
+    addresses = malloc(size);
+    status = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, addresses, &size);
+    if (status == ERROR_SUCCESS) {
+        for (addr = addresses; addr; addr = addr->Next) {
+            if (addr->AdapterName && !strcmp(ifname, addr->AdapterName)) {
+                index = addr->IfIndex;
+                break;
+            }
+        }
+    }
 
-	free(addresses);
-	return index;
+    free(addresses);
+    return index;
 }
 
 #if WINVER < 0x0600
@@ -360,55 +347,51 @@ win_if_nametoindex(const char *ifname)
  * 23. http://www.cs.wustl.edu/ACE.html
  */
 
-void
-InitializeXPConditionVariable(userland_cond_t *cv)
+void InitializeXPConditionVariable(userland_cond_t* cv)
 {
-	cv->waiters_count = 0;
-	InitializeCriticalSection(&(cv->waiters_count_lock));
-	cv->events_[C_SIGNAL] = CreateEvent (NULL, FALSE, FALSE, NULL);
-	cv->events_[C_BROADCAST] = CreateEvent (NULL, TRUE, FALSE, NULL);
+    cv->waiters_count = 0;
+    InitializeCriticalSection(&(cv->waiters_count_lock));
+    cv->events_[C_SIGNAL] = CreateEvent(NULL, FALSE, FALSE, NULL);
+    cv->events_[C_BROADCAST] = CreateEvent(NULL, TRUE, FALSE, NULL);
 }
 
-void
-DeleteXPConditionVariable(userland_cond_t *cv)
+void DeleteXPConditionVariable(userland_cond_t* cv)
 {
-	CloseHandle(cv->events_[C_BROADCAST]);
-	CloseHandle(cv->events_[C_SIGNAL]);
-	DeleteCriticalSection(&(cv->waiters_count_lock));
+    CloseHandle(cv->events_[C_BROADCAST]);
+    CloseHandle(cv->events_[C_SIGNAL]);
+    DeleteCriticalSection(&(cv->waiters_count_lock));
 }
 
-int
-SleepXPConditionVariable(userland_cond_t *cv, userland_mutex_t *mtx)
+int SleepXPConditionVariable(userland_cond_t* cv, userland_mutex_t* mtx)
 {
-	int result, last_waiter;
+    int result, last_waiter;
 
-	EnterCriticalSection(&cv->waiters_count_lock);
-	cv->waiters_count++;
-	LeaveCriticalSection(&cv->waiters_count_lock);
-	LeaveCriticalSection (mtx);
-	result = WaitForMultipleObjects(2, cv->events_, FALSE, INFINITE);
-	if (result==-1) {
-		result = GetLastError();
-	}
-	EnterCriticalSection(&cv->waiters_count_lock);
-	cv->waiters_count--;
-	last_waiter = result == (C_SIGNAL + C_BROADCAST && (cv->waiters_count == 0));
-	LeaveCriticalSection(&cv->waiters_count_lock);
-	if (last_waiter)
-		ResetEvent(cv->events_[C_BROADCAST]);
-	EnterCriticalSection (mtx);
-	return result;
+    EnterCriticalSection(&cv->waiters_count_lock);
+    cv->waiters_count++;
+    LeaveCriticalSection(&cv->waiters_count_lock);
+    LeaveCriticalSection(mtx);
+    result = WaitForMultipleObjects(2, cv->events_, FALSE, INFINITE);
+    if (result == -1) {
+        result = GetLastError();
+    }
+    EnterCriticalSection(&cv->waiters_count_lock);
+    cv->waiters_count--;
+    last_waiter = result == (C_SIGNAL + C_BROADCAST && (cv->waiters_count == 0));
+    LeaveCriticalSection(&cv->waiters_count_lock);
+    if (last_waiter)
+        ResetEvent(cv->events_[C_BROADCAST]);
+    EnterCriticalSection(mtx);
+    return result;
 }
 
-void
-WakeAllXPConditionVariable(userland_cond_t *cv)
+void WakeAllXPConditionVariable(userland_cond_t* cv)
 {
-	int have_waiters;
-	EnterCriticalSection(&cv->waiters_count_lock);
-	have_waiters = cv->waiters_count > 0;
-	LeaveCriticalSection(&cv->waiters_count_lock);
-	if (have_waiters)
-		SetEvent (cv->events_[C_BROADCAST]);
+    int have_waiters;
+    EnterCriticalSection(&cv->waiters_count_lock);
+    have_waiters = cv->waiters_count > 0;
+    LeaveCriticalSection(&cv->waiters_count_lock);
+    if (have_waiters)
+        SetEvent(cv->events_[C_BROADCAST]);
 }
 #endif
 #endif

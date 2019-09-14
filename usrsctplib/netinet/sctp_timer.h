@@ -45,59 +45,48 @@ __FBSDID("$FreeBSD: head/sys/netinet/sctp_timer.h 295709 2016-02-17 18:04:22Z tu
 #define SCTP_RTT_SHIFT 3
 #define SCTP_RTT_VAR_SHIFT 2
 
-struct sctp_nets *
-sctp_find_alternate_net(struct sctp_tcb *,
-    struct sctp_nets *, int mode);
+struct sctp_nets*
+sctp_find_alternate_net(struct sctp_tcb*,
+    struct sctp_nets*, int mode);
 
-int
-sctp_t3rxt_timer(struct sctp_inpcb *, struct sctp_tcb *,
-    struct sctp_nets *);
-int
-sctp_t1init_timer(struct sctp_inpcb *, struct sctp_tcb *,
-    struct sctp_nets *);
-int
-sctp_shutdown_timer(struct sctp_inpcb *, struct sctp_tcb *,
-    struct sctp_nets *);
-int
-sctp_heartbeat_timer(struct sctp_inpcb *, struct sctp_tcb *,
-    struct sctp_nets *);
+int sctp_t3rxt_timer(struct sctp_inpcb*, struct sctp_tcb*,
+    struct sctp_nets*);
+int sctp_t1init_timer(struct sctp_inpcb*, struct sctp_tcb*,
+    struct sctp_nets*);
+int sctp_shutdown_timer(struct sctp_inpcb*, struct sctp_tcb*,
+    struct sctp_nets*);
+int sctp_heartbeat_timer(struct sctp_inpcb*, struct sctp_tcb*,
+    struct sctp_nets*);
 
-int
-sctp_cookie_timer(struct sctp_inpcb *, struct sctp_tcb *,
-    struct sctp_nets *);
+int sctp_cookie_timer(struct sctp_inpcb*, struct sctp_tcb*,
+    struct sctp_nets*);
 
-void
-sctp_pathmtu_timer(struct sctp_inpcb *, struct sctp_tcb *,
-    struct sctp_nets *);
+void sctp_pathmtu_timer(struct sctp_inpcb*, struct sctp_tcb*,
+    struct sctp_nets*);
 
-int
-sctp_shutdownack_timer(struct sctp_inpcb *, struct sctp_tcb *,
-    struct sctp_nets *);
-int
-sctp_strreset_timer(struct sctp_inpcb *inp, struct sctp_tcb *stcb,
-    struct sctp_nets *net);
+int sctp_shutdownack_timer(struct sctp_inpcb*, struct sctp_tcb*,
+    struct sctp_nets*);
+int sctp_strreset_timer(struct sctp_inpcb* inp, struct sctp_tcb* stcb,
+    struct sctp_nets* net);
 
-int
-sctp_asconf_timer(struct sctp_inpcb *, struct sctp_tcb *,
-    struct sctp_nets *);
+int sctp_asconf_timer(struct sctp_inpcb*, struct sctp_tcb*,
+    struct sctp_nets*);
 
-void
-sctp_delete_prim_timer(struct sctp_inpcb *, struct sctp_tcb *,
-    struct sctp_nets *);
+void sctp_delete_prim_timer(struct sctp_inpcb*, struct sctp_tcb*,
+    struct sctp_nets*);
 
-void
-sctp_autoclose_timer(struct sctp_inpcb *, struct sctp_tcb *,
-    struct sctp_nets *net);
+void sctp_autoclose_timer(struct sctp_inpcb*, struct sctp_tcb*,
+    struct sctp_nets* net);
 
-void sctp_audit_retranmission_queue(struct sctp_association *);
+void sctp_audit_retranmission_queue(struct sctp_association*);
 
-void sctp_iterator_timer(struct sctp_iterator *it);
+void sctp_iterator_timer(struct sctp_iterator* it);
 
 #if defined(__APPLE__)
 #if defined(APPLE_LEOPARD) || defined(APPLE_SNOWLEOPARD) || defined(APPLE_LION) || defined(APPLE_MOUNTAINLION)
 void sctp_slowtimo(void);
 #else
-void sctp_gc(struct inpcbinfo *);
+void sctp_gc(struct inpcbinfo*);
 #endif
 #endif
 

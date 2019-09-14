@@ -42,40 +42,40 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#if defined(__Userspace_os_Darwin) || defined (__Userspace_os_Windows)
-#if defined (__Userspace_os_Windows)
+#if defined(__Userspace_os_Darwin) || defined(__Userspace_os_Windows)
+#if defined(__Userspace_os_Windows)
 #define atomic_add_int(addr, val) InterlockedExchangeAdd((LPLONG)addr, (LONG)val)
 #define atomic_fetchadd_int(addr, val) InterlockedExchangeAdd((LPLONG)addr, (LONG)val)
-#define atomic_subtract_int(addr, val)   InterlockedExchangeAdd((LPLONG)addr,-((LONG)val))
+#define atomic_subtract_int(addr, val) InterlockedExchangeAdd((LPLONG)addr, -((LONG)val))
 #define atomic_cmpset_int(dst, exp, src) InterlockedCompareExchange((LPLONG)dst, src, exp)
 #define SCTP_DECREMENT_AND_CHECK_REFCOUNT(addr) (InterlockedExchangeAdd((LPLONG)addr, (-1L)) == 1)
 #else
 #include <libkern/OSAtomic.h>
-#define atomic_add_int(addr, val) OSAtomicAdd32Barrier(val, (int32_t *)addr)
-#define atomic_fetchadd_int(addr, val) OSAtomicAdd32Barrier(val, (int32_t *)addr)
-#define atomic_subtract_int(addr, val) OSAtomicAdd32Barrier(-val, (int32_t *)addr)
-#define atomic_cmpset_int(dst, exp, src) OSAtomicCompareAndSwapIntBarrier(exp, src, (int *)dst)
+#define atomic_add_int(addr, val) OSAtomicAdd32Barrier(val, (int32_t*)addr)
+#define atomic_fetchadd_int(addr, val) OSAtomicAdd32Barrier(val, (int32_t*)addr)
+#define atomic_subtract_int(addr, val) OSAtomicAdd32Barrier(-val, (int32_t*)addr)
+#define atomic_cmpset_int(dst, exp, src) OSAtomicCompareAndSwapIntBarrier(exp, src, (int*)dst)
 #define SCTP_DECREMENT_AND_CHECK_REFCOUNT(addr) (atomic_fetchadd_int(addr, -1) == 0)
 #endif
 
 #if defined(INVARIANTS)
-#define SCTP_SAVE_ATOMIC_DECREMENT(addr, val) \
-{ \
-	int32_t newval; \
-	newval = atomic_fetchadd_int(addr, -val); \
-	if (newval < 0) { \
-		panic("Counter goes negative"); \
-	} \
-}
+#define SCTP_SAVE_ATOMIC_DECREMENT(addr, val)     \
+    {                                             \
+        int32_t newval;                           \
+        newval = atomic_fetchadd_int(addr, -val); \
+        if (newval < 0) {                         \
+            panic("Counter goes negative");       \
+        }                                         \
+    }
 #else
-#define SCTP_SAVE_ATOMIC_DECREMENT(addr, val) \
-{ \
-	int32_t newval; \
-	newval = atomic_fetchadd_int(addr, -val); \
-	if (newval < 0) { \
-		*addr = 0; \
-	} \
-}
+#define SCTP_SAVE_ATOMIC_DECREMENT(addr, val)     \
+    {                                             \
+        int32_t newval;                           \
+        newval = atomic_fetchadd_int(addr, -val); \
+        if (newval < 0) {                         \
+            *addr = 0;                            \
+        }                                         \
+    }
 #endif
 #if defined(__Userspace_os_Windows)
 static void atomic_init(void) {} /* empty when we are not using atomic_mtx */
@@ -91,10 +91,10 @@ static inline void atomic_init(void) {} /* empty when we are not using atomic_mt
  */
 
 /*Atomically add V to *P.*/
-#define atomic_add_int(P, V)	 (void) __sync_fetch_and_add(P, V)
+#define atomic_add_int(P, V) (void)__sync_fetch_and_add(P, V)
 
 /*Atomically subtrace V from *P.*/
-#define atomic_subtract_int(P, V) (void) __sync_fetch_and_sub(P, V)
+#define atomic_subtract_int(P, V) (void)__sync_fetch_and_sub(P, V)
 
 /*
  * Atomically add the value of v to the integer pointed to by p and return
@@ -114,23 +114,23 @@ static inline void atomic_init(void) {} /* empty when we are not using atomic_mt
 
 #define SCTP_DECREMENT_AND_CHECK_REFCOUNT(addr) (atomic_fetchadd_int(addr, -1) == 1)
 #if defined(INVARIANTS)
-#define SCTP_SAVE_ATOMIC_DECREMENT(addr, val) \
-{ \
-	int32_t oldval; \
-	oldval = atomic_fetchadd_int(addr, -val); \
-	if (oldval < val) { \
-		panic("Counter goes negative"); \
-	} \
-}
+#define SCTP_SAVE_ATOMIC_DECREMENT(addr, val)     \
+    {                                             \
+        int32_t oldval;                           \
+        oldval = atomic_fetchadd_int(addr, -val); \
+        if (oldval < val) {                       \
+            panic("Counter goes negative");       \
+        }                                         \
+    }
 #else
-#define SCTP_SAVE_ATOMIC_DECREMENT(addr, val) \
-{ \
-	int32_t oldval; \
-	oldval = atomic_fetchadd_int(addr, -val); \
-	if (oldval < val) { \
-		*addr = 0; \
-	} \
-}
+#define SCTP_SAVE_ATOMIC_DECREMENT(addr, val)     \
+    {                                             \
+        int32_t oldval;                           \
+        oldval = atomic_fetchadd_int(addr, -val); \
+        if (oldval < val) {                       \
+            *addr = 0;                            \
+        }                                         \
+    }
 #endif
 static inline void atomic_init(void) {} /* empty when we are not using atomic_mtx */
 #endif
@@ -139,7 +139,7 @@ static inline void atomic_init(void) {} /* empty when we are not using atomic_mt
 #include "user_include/atomic_ops.h"
 
 /*Atomically add incr to *P, and return the original value of *P.*/
-#define atomic_add_int(P, V)	 AO_fetch_and_add((AO_t*)P, V)
+#define atomic_add_int(P, V) AO_fetch_and_add((AO_t*)P, V)
 
 #define atomic_subtract_int(P, V) AO_fetch_and_add((AO_t*)P, -(V))
 
@@ -173,7 +173,7 @@ static inline void atomic_init() {} /* empty when we are not using atomic_mtx */
 
 extern userland_mutex_t atomic_mtx;
 
-#if defined (__Userspace_os_Windows)
+#if defined(__Userspace_os_Windows)
 static inline void atomic_init() {
 	InitializeCriticalSection(&atomic_mtx);
 }
@@ -220,7 +220,7 @@ static inline void atomic_unlock() {
  * on both SMP and !SMP systems.
  */
 
-#define	MPLOCKED	"lock ; "
+#define MPLOCKED "lock ; "
 
 /*
  * Atomically add the value of v to the integer pointed to by p and return
@@ -242,7 +242,6 @@ atomic_fetchadd_int(volatile void *n, u_int v)
 
 	return (v);
 }
-
 
 #ifdef CPU_DISABLE_CMPXCHG
 
@@ -300,16 +299,18 @@ atomic_cmpset_int(volatile u_int *dst, u_int exp, u_int src)
 
 #endif /* CPU_DISABLE_CMPXCHG */
 
-#define atomic_add_int(P, V)	 do {   \
-		atomic_lock();          \
-		(*(u_int *)(P) += (V)); \
-		atomic_unlock();        \
-} while(0)
-#define atomic_subtract_int(P, V)  do {   \
-		atomic_lock();            \
-		(*(u_int *)(P) -= (V));   \
-		atomic_unlock();          \
-} while(0)
+#define atomic_add_int(P, V)   \
+    do {                       \
+        atomic_lock();         \
+        (*(u_int*)(P) += (V)); \
+        atomic_unlock();       \
+    } while (0)
+#define atomic_subtract_int(P, V) \
+    do {                          \
+        atomic_lock();            \
+        (*(u_int*)(P) -= (V));    \
+        atomic_unlock();          \
+    } while (0)
 
 #endif
 #endif
