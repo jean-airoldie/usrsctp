@@ -1056,6 +1056,9 @@ int
 usrsctp_set_send_callback2(struct socket *, void (*)(struct socket *, uint32_t, void *));
 
 int
+usrsctp_set_sb_threshold(struct socket *, uint32_t);
+
+int
 usrsctp_set_upcall(struct socket *so,
                    void (*upcall)(struct socket *, void *, int),
                    void *arg);

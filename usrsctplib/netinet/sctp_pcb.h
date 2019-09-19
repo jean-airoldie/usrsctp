@@ -613,6 +613,7 @@ int register_send_cb (struct socket *, uint32_t, int (*)(struct socket *, uint32
 int register_recv_callback2 (struct socket *, void (*)(struct socket *, uint32_t, void *));
 int register_send_callback2 (struct socket *, void (*)(struct socket *, uint32_t, void *));
 int register_ulp_info (struct socket *, void *);
+int register_sb_threshold(struct socket *, uint32_t);
 
 #endif
 struct sctp_tcb {
